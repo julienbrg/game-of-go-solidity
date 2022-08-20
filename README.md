@@ -14,6 +14,11 @@ npm i
 npx hardhat test
 ```
 
+## Rationale
+
+- One deployed contract represents one match.
+- The deployer set the addresses of White and Black at deployment.
+
 ## Resources
 
 - [Tromp-Taylor Rules](https://senseis.xmp.net/?TrompTaylorRules)
