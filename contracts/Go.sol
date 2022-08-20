@@ -5,21 +5,15 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract Go is ReentrancyGuard {
 
-    // should be 19 * 19
-    uint256 public goban = 3 * 3;
-    uint256 public width = 3;
-
+    uint256 public goban = 19 * 19;
+    uint256 public width = 19;
     address public white;
     address public black;
-    
     address public turn;
-
     uint256 public capturedWhiteStones;
     uint256 public capturedBlackStones;
-
     bool public blackPassedOnce;
     bool public whitePassedOnce;
-
     int256 public blackScore;
     int256 public whiteScore;
 
@@ -29,44 +23,41 @@ contract Go is ReentrancyGuard {
         State state;
     }
 
-    Intersection[9] public intersections;
+    Intersection[361] public intersections;
 
     enum State {
         Black,
         White,
         Empty
     }
-
     State public state;
 
-    event Start();
+    event Start(string indexed statement);
     event Move(string indexed player, uint256 indexed x, uint256 indexed y);
-    event End();
+    event End(string indexed statement, int256 indexed blackScore, int256 indexed whiteScore);
 
     constructor (
-
         address _white, 
         address _black
-
-    ) payable
+    )
 
     {
         white = _white;
         black = _black;
 
+        // Black plays first
         turn = black;
-
-        // currently 3 * 3 but should be 19 * 19
-        // can be simplified
+        
+        // Goban init
+        uint256 i;
         intersections[0] = Intersection({x: 0, y: 0, state: State.Empty});
-        intersections[1] = Intersection({x: 0, y: 1, state: State.Empty});
-        intersections[2] = Intersection({x: 0, y: 2, state: State.Empty});
-        intersections[3] = Intersection({x: 1, y: 0, state: State.Empty});
-        intersections[4] = Intersection({x: 1, y: 1, state: State.Empty});
-        intersections[5] = Intersection({x: 1, y: 2, state: State.Empty});
-        intersections[6] = Intersection({x: 2, y: 0, state: State.Empty});
-        intersections[7] = Intersection({x: 2, y: 1, state: State.Empty});
-        intersections[8] = Intersection({x: 2, y: 2, state: State.Empty});
+        for( uint256 j ; j < width ; j++ ) {
+            for( uint256 k ; k < width ; k++ ) {
+                intersections[i++] = Intersection({x: j, y: k, state: State.Empty});
+            }
+        }
+        require(i==goban, "ERROR_DURING_GOBAN_INIT");
+        emit Start("The game has started.");
     }
 
     function play(uint256 _x, uint256 _y) public nonReentrant() {
@@ -114,8 +105,13 @@ contract Go is ReentrancyGuard {
     function end() private {
         require(blackPassedOnce == true || whitePassedOnce == true, "MISSING_TWO_CONSECUTIVE_PASS"); // not sure if relevant or enough safe
         blackScore = 1; // count the points instead
-        whiteScore = 0; 
-        emit End();
+        whiteScore = 0;
+        if (blackScore > whiteScore) {
+            emit End("Black wins", blackScore, whiteScore);
+        } else {
+            emit End("White wins", blackScore, whiteScore);
+        }
+        
     }
 
     function isOffBoard(uint256 _a, uint256 _b) public view returns (bool offBoard) {
