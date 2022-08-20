@@ -15,12 +15,12 @@ describe("Go", function () {
       const { go, white, black, attacker } = await loadFixture(startNewMatch);
       expect(await go.white()).to.equal(white.address);
       expect(await go.black()).to.equal(black.address);
-      expect(go.connect(attacker).play(1,1)).to.be.revertedWith("CALLER_IS_NOT_ALLOWED_TO_PLAY");
+      expect(go.connect(attacker).play(16,17)).to.be.revertedWith("CALLER_IS_NOT_ALLOWED_TO_PLAY");
     });
     it("Should let players play", async function () {
       const { go, black, white } = await loadFixture(startNewMatch);
       await go.connect(black).play(16,17);
-      await go.connect(white).play(1,2)
+      await go.connect(white).play(3,3);
       expect(await go.getIntersectionId(1,1)).to.equal(20);
       expect(go.connect(black).play(1,42)).to.be.revertedWith("OFF_BOARD");
     });
@@ -36,14 +36,14 @@ describe("Go", function () {
     });
     it("Should return the intersection id", async function () {
       const {go, black } = await loadFixture(startNewMatch);
-      await go.connect(black).play(1,1);
+      await go.connect(black).play(16,17);
       expect(await go.getIntersectionId(16,17)).to.equal(321);
     });
-    it("Should be out off board", async function () {
+    it("Should be off board", async function () {
       const {go, black, white } = await loadFixture(startNewMatch);
       await go.connect(black).play(16,17);
-      expect(await go.getIntersectionId(1,42)).to.be.gt(360);
-      expect(await go.isOffBoard(1,42)).to.equal(true);
+      expect(await go.getIntersectionId(42,42)).to.be.gt(360);
+      expect(await go.isOffBoard(42,42)).to.equal(true);
       expect(go.connect(white).play(1,42)).to.be.revertedWith("OFF_BOARD");
     });
     it("Should return the 4 neighbors", async function () {
