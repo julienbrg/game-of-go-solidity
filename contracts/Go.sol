@@ -69,9 +69,9 @@ contract Go is ReentrancyGuard {
         intersections[8] = Intersection({x: 2, y: 2, state: State.Empty});
     }
 
-    function play(uint _x, uint _y) public nonReentrant() {
+    function play(uint256 _x, uint256 _y) public nonReentrant() {
         require(msg.sender == white || msg.sender == black, "CALLER_IS_NOT_ALLOWED_TO_PLAY" ); // maybe better with a onlyPlayer modifier instead
-        
+        require(isOffBoard(_x, _y) == false, "OFF_BOARD");
         uint256 move = getIntersectionId(_x, _y);
         require(intersections[move].state == State.Empty, "CANNOT_PLAY_HERE");
 
@@ -111,6 +111,12 @@ contract Go is ReentrancyGuard {
         require(blackPassedOnce == true || whitePassedOnce == true, "MISSING_TWO_CONSECUTIVE_PASS"); // not sure if useful
         // count the points
         emit End();
+    }
+
+    function isOffBoard(uint256 _a, uint256 _b) public view returns (bool offBoard) {
+        if (getIntersectionId(_a, _b) >= goban - 1) {
+            return true;
+        }
     }
 
     function getIntersectionId(uint256 _a, uint256 _b) public view returns (uint256 target) {

@@ -33,9 +33,11 @@ describe("Go", function () {
       expect(await go.getIntersectionId(1,1)).to.equal(4);
     });
     it("Should be out off board", async function () {
-      const {go, black } = await loadFixture(startNewMatch);
+      const {go, black, white } = await loadFixture(startNewMatch);
       await go.connect(black).play(1,1);
       expect(await go.getIntersectionId(1,3)).to.be.gt(8);
+      expect(await go.isOffBoard(1,3)).to.equal(true);
+      expect(go.connect(white).play(1,4)).to.be.revertedWith("OFF_BOARD");
     });
     it("Should return the 4 neighbors", async function () {
       const {go, black } = await loadFixture(startNewMatch);
