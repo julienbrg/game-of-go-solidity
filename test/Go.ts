@@ -27,5 +27,24 @@ describe("Go", function () {
       expect(go.connect(white).play(1,1)).to.be.revertedWith("CANNOT_PLAY_HERE");
       expect(go.connect(attacker).play(1,1)).to.be.revertedWith("CALLER_IS_NOT_ALLOWED_TO_PLAY");
     });
+    it("Should return the intersection id", async function () {
+      const {go, black } = await loadFixture(startNewMatch);
+      await go.connect(black).play(1,1);
+      expect(await go.getIntersectionId(1,1)).to.equal(4);
+    });
+    it("Should be out off board", async function () {
+      const {go, black } = await loadFixture(startNewMatch);
+      await go.connect(black).play(1,1);
+      expect(await go.getIntersectionId(1,3)).to.be.gt(8);
+    });
+    it("Should return the 4 neighbors", async function () {
+      const {go, black } = await loadFixture(startNewMatch);
+      await go.connect(black).play(1,1);
+      const target = await go.getIntersectionId(1,1) ;
+      expect((await go.getNeighbors(target)).east ).to.equal(3);
+      expect((await go.getNeighbors(target)).west ).to.equal(5);
+      expect((await go.getNeighbors(target)).north ).to.equal(7);
+      expect((await go.getNeighbors(target)).south ).to.equal(1);
+    });
   });
 });

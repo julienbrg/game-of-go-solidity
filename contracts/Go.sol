@@ -7,6 +7,7 @@ contract Go is ReentrancyGuard {
 
     // should be 19 * 19
     uint256 public goban = 3 * 3;
+    uint256 public width = 3;
 
     address public white;
     address public black;
@@ -71,7 +72,7 @@ contract Go is ReentrancyGuard {
     function play(uint _x, uint _y) public nonReentrant() {
         require(msg.sender == white || msg.sender == black, "CALLER_IS_NOT_ALLOWED_TO_PLAY" ); // maybe better with a onlyPlayer modifier instead
         
-        uint256 move = getIntersection(_x, _y);
+        uint256 move = getIntersectionId(_x, _y);
         require(intersections[move].state == State.Empty, "CANNOT_PLAY_HERE");
 
         if (msg.sender == white) {
@@ -112,7 +113,7 @@ contract Go is ReentrancyGuard {
         emit End();
     }
 
-    function getIntersection(uint256 _a, uint256 _b) public view returns (uint256 target) {
+    function getIntersectionId(uint256 _a, uint256 _b) public view returns (uint256 target) {
         for (target; target < goban ; target++) {
             if (intersections[target].x == _a && intersections[target].y == _b) {
                 return target;
@@ -120,12 +121,15 @@ contract Go is ReentrancyGuard {
         }
     }
 
+    function getIntersection(uint256 _target) public view returns (uint256 _x, uint256 _y) {
+        return (intersections[_target].x, intersections[_target].y);
+    }
+
     function getNeighbors(uint256 _target) public view returns (uint256 east, uint256 west, uint256 north, uint256 south) {
-        
-
-        
-        west = 88888;
-
+        east = _target - 1;
+        west = _target + 1;
+        north = _target + width;
+        south = _target - width;   
         return (east, west, north, south);
     }
 }
