@@ -85,22 +85,20 @@ contract Go is ReentrancyGuard {
         require(msg.sender == white || msg.sender == black, "CALLER_IS_NOT_ALLOWED_TO_PLAY" );
         if (msg.sender == white) {
             turn = black;
+            emit Move("White", 42, 42); // off board
         }
 
         if (msg.sender == black) {
-
             if (blackPassedOnce == true) {
                 end();
             }
-            
             blackPassedOnce = true;
             turn = white;
+            emit Move("Black", 42, 42); // off board
         }
     }
 
-    function capture(uint256 _stone) private {
-
-    }
+    function capture(uint256 _stone) private {}
 
     function end() private {
         require(blackPassedOnce == true || whitePassedOnce == true, "MISSING_TWO_CONSECUTIVE_PASS"); // not sure if relevant or enough safe
@@ -111,7 +109,6 @@ contract Go is ReentrancyGuard {
         } else {
             emit End("White wins", blackScore, whiteScore);
         }
-        
     }
 
     function isOffBoard(uint256 _a, uint256 _b) public view returns (bool offBoard) {

@@ -22,7 +22,7 @@ describe("Go", function () {
       await go.connect(black).play(16,17);
       await go.connect(white).play(3,3);
       expect(await go.getIntersectionId(1,1)).to.equal(20);
-      expect(go.connect(black).play(1,42)).to.be.revertedWith("OFF_BOARD");
+      expect(go.connect(black).play(42,42)).to.be.revertedWith("OFF_BOARD");
     });
   });
 
