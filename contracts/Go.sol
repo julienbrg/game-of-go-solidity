@@ -107,9 +107,14 @@ contract Go is ReentrancyGuard {
         }
     }
 
+    function capture(uint256 _stone) private {
+
+    }
+
     function end() private {
-        require(blackPassedOnce == true || whitePassedOnce == true, "MISSING_TWO_CONSECUTIVE_PASS"); // not sure if useful
-        // count the points
+        require(blackPassedOnce == true || whitePassedOnce == true, "MISSING_TWO_CONSECUTIVE_PASS"); // not sure if relevant or enough safe
+        blackScore = 1; // count the points instead
+        whiteScore = 0; 
         emit End();
     }
 

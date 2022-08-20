@@ -48,5 +48,20 @@ describe("Go", function () {
       expect((await go.getNeighbors(target)).north ).to.equal(7);
       expect((await go.getNeighbors(target)).south ).to.equal(1);
     });
+    it("Should pass", async function () {
+      const {go, black } = await loadFixture(startNewMatch);
+      await go.connect(black).pass();
+      expect(await go.blackPassedOnce()).to.equal(true);
+    });
+    it("Should end the game", async function () {
+      const {go, black, white } = await loadFixture(startNewMatch);
+      await go.connect(black).pass();
+      await go.connect(white).play(1,2);
+      expect(go.connect(black).pass()).to.be.revertedWith("MISSING_TWO_CONSECUTIVE_PASS");
+      await go.connect(black).pass();
+      await go.connect(white).pass();
+      await go.connect(black).pass();
+      expect(await go.blackScore()).to.equal(1);
+    });
   });
 });
