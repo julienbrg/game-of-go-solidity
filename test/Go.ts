@@ -22,9 +22,9 @@ describe("Go", function () {
   describe("Interactions", function () {
     it("Should play one move", async function () {
       const {go, white, black, attacker } = await loadFixture(startNewMatch);
-      expect(go.connect(black).play(1,1)).to.be.revertedWith("NOT_YOUR_TURN");
-      await go.connect(white).play(1,1);
-      expect(go.connect(black).play(1,1)).to.be.revertedWith("CANNOT_PLAY_HERE");
+      expect(go.connect(white).play(1,1)).to.be.revertedWith("NOT_YOUR_TURN");
+      await go.connect(black).play(1,1);
+      expect(go.connect(white).play(1,1)).to.be.revertedWith("CANNOT_PLAY_HERE");
       expect(go.connect(attacker).play(1,1)).to.be.revertedWith("CALLER_IS_NOT_ALLOWED_TO_PLAY");
     });
   });

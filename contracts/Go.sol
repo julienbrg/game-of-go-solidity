@@ -10,10 +10,17 @@ contract Go is ReentrancyGuard {
 
     address public white;
     address public black;
+    
     address public turn;
 
     uint256 public capturedWhiteStones;
     uint256 public capturedBlackStones;
+
+    bool public blackPassedOnce;
+    bool public whitePassedOnce;
+
+    int256 public blackScore;
+    int256 public whiteScore;
 
     struct Intersection {
         uint256 x;
@@ -46,9 +53,10 @@ contract Go is ReentrancyGuard {
         white = _white;
         black = _black;
 
-        turn = white;
+        turn = black;
 
         // currently 3 * 3 but should be 19 * 19
+        // can be simplified
         intersections[0] = Intersection({x: 0, y: 0, state: State.Empty});
         intersections[1] = Intersection({x: 0, y: 1, state: State.Empty});
         intersections[2] = Intersection({x: 0, y: 2, state: State.Empty});
@@ -61,7 +69,7 @@ contract Go is ReentrancyGuard {
     }
 
     function play(uint _x, uint _y) public nonReentrant() {
-        require(msg.sender == white || msg.sender == black, "CALLER_IS_NOT_ALLOWED_TO_PLAY" );
+        require(msg.sender == white || msg.sender == black, "CALLER_IS_NOT_ALLOWED_TO_PLAY" ); // maybe better with a onlyPlayer modifier instead
         
         uint256 move = getIntersection(_x, _y);
         require(intersections[move].state == State.Empty, "CANNOT_PLAY_HERE");
@@ -81,15 +89,27 @@ contract Go is ReentrancyGuard {
         }
     }
 
-    function pass() public {
+    function pass() public nonReentrant() {
         require(msg.sender == white || msg.sender == black, "CALLER_IS_NOT_ALLOWED_TO_PLAY" );
         if (msg.sender == white) {
             turn = black;
         }
 
         if (msg.sender == black) {
+
+            if (blackPassedOnce == true) {
+                end();
+            }
+            
+            blackPassedOnce = true;
             turn = white;
         }
+    }
+
+    function end() private {
+        require(blackPassedOnce == true || whitePassedOnce == true, "MISSING_TWO_CONSECUTIVE_PASS"); // not sure if useful
+        // count the points
+        emit End();
     }
 
     function getIntersection(uint256 _a, uint256 _b) public view returns (uint256 target) {
@@ -98,5 +118,14 @@ contract Go is ReentrancyGuard {
                 return target;
             }
         }
+    }
+
+    function getNeighbors(uint256 _target) public view returns (uint256 east, uint256 west, uint256 north, uint256 south) {
+        
+
+        
+        west = 88888;
+
+        return (east, west, north, south);
     }
 }
