@@ -27,7 +27,7 @@ npx hardhat test
 
 ## Support
 
-- [Email](mailto:julien@strat.cc)
+- [Element](https://matrix.to/#/@julienbrg:matrix.org) (preferred)
 - [Twitter](https://twitter.com/julienbrg)
 - [LinkedIn](https://www.linkedin.com/in/julienberanger/)
-- [Element](https://app.element.io/#/room/#strat:matrix.org)
+- [Email](mailto:julien@strat.cc)
