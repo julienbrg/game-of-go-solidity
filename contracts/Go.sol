@@ -3,6 +3,7 @@ pragma solidity ^0.8.8;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "hardhat/console.sol";
 
 contract Go is ReentrancyGuard {
 
@@ -150,28 +151,36 @@ contract Go is ReentrancyGuard {
         uint north;
         uint south;
 
-        uint id;
+        uint id = 0 ;
 
         group[id] = _target;
 
         (east, west, north, south) = getNeighbors(_target);
 
         if (intersections[_target].state == intersections[east].state) {
-            group[1] = east;
+            id = id + 1;
+            console.log("      id  east =", id);
+            group[id] = east;
             nextTarget = east;
         }
-        // if (intersections[_target].state == intersections[west].state) {
-        //     group[2] = west;
-        //     nextTarget = west;
-        // }
-        // if (intersections[_target].state == intersections[north].state) {
-        //     group[3] = north;
-        //     nextTarget = north;
-        // }
-        // if (intersections[_target].state == intersections[south].state) {
-        //     group[4] = south;
-        //     nextTarget = south;
-        // }
+        if (intersections[_target].state == intersections[west].state) {
+            id = id + 1;
+            console.log("      id west =", id);
+            group[id] = west;
+            nextTarget = west;
+        }
+        if (intersections[_target].state == intersections[north].state) {
+            id = id + 1;
+            console.log("      id north =", id);
+            group[id] = north;
+            nextTarget = north;
+        }
+        if (intersections[_target].state == intersections[south].state) {
+            id = id + 1;
+            console.log("      id south =", id);
+            group[id] = south;
+            nextTarget = south;
+        }
 
         return group;
     }
