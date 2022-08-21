@@ -1,25 +1,26 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.8;
+pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract Go is ReentrancyGuard {
 
-    uint256 public goban = 19 * 19;
-    uint256 public width = 19;
+    uint public goban = 19 * 19;
+    uint public width = 19;
     address public white;
     address public black;
     address public turn;
-    uint256 public capturedWhiteStones;
-    uint256 public capturedBlackStones;
+    uint public capturedWhiteStones;
+    uint public capturedBlackStones;
     bool public blackPassedOnce;
     bool public whitePassedOnce;
-    int256 public blackScore;
-    int256 public whiteScore;
+    int public blackScore;
+    int public whiteScore;
 
     struct Intersection {
-        uint256 x;
-        uint256 y;
+        uint x;
+        uint y;
         State state;
     }
 
@@ -33,8 +34,8 @@ contract Go is ReentrancyGuard {
     State public state;
 
     event Start(string indexed statement);
-    event Move(string indexed player, uint256 indexed x, uint256 indexed y);
-    event End(string indexed statement, int256 indexed blackScore, int256 indexed whiteScore);
+    event Move(string indexed player, uint indexed x, uint indexed y);
+    event End(string indexed statement, int indexed blackScore, int indexed whiteScore);
 
     constructor (
         address _white, 
@@ -49,10 +50,10 @@ contract Go is ReentrancyGuard {
         turn = black;
         
         // Goban init
-        uint256 i;
+        uint i;
         intersections[0] = Intersection({x: 0, y: 0, state: State.Empty});
-        for( uint256 j ; j < width ; j++ ) {
-            for( uint256 k ; k < width ; k++ ) {
+        for( uint j ; j < width ; j++ ) {
+            for( uint k ; k < width ; k++ ) {
                 intersections[i++] = Intersection({x: j, y: k, state: State.Empty});
             }
         }
@@ -60,10 +61,10 @@ contract Go is ReentrancyGuard {
         emit Start("The game has started.");
     }
 
-    function play(uint256 _x, uint256 _y) public nonReentrant() {
+    function play(uint _x, uint _y) public nonReentrant() {
         require(msg.sender == white || msg.sender == black, "CALLER_IS_NOT_ALLOWED_TO_PLAY" ); // maybe better with a onlyPlayer modifier instead
         require(isOffBoard(_x, _y) == false, "OFF_BOARD");
-        uint256 move = getIntersectionId(_x, _y);
+        uint move = getIntersectionId(_x, _y);
         require(intersections[move].state == State.Empty, "CANNOT_PLAY_HERE");
 
         if (msg.sender == white) {
@@ -98,7 +99,7 @@ contract Go is ReentrancyGuard {
         }
     }
 
-    function capture(uint256 _stone) private {}
+    function capture(uint _stone) private {}
 
     function end() private {
         require(blackPassedOnce == true || whitePassedOnce == true, "MISSING_TWO_CONSECUTIVE_PASS"); // not sure if relevant or enough safe
@@ -111,13 +112,13 @@ contract Go is ReentrancyGuard {
         }
     }
 
-    function isOffBoard(uint256 _a, uint256 _b) public view returns (bool offBoard) {
+    function isOffBoard(uint _a, uint _b) public view returns (bool offBoard) {
         if (getIntersectionId(_a, _b) >= goban - 1) {
             return true;
         }
     }
 
-    function getIntersectionId(uint256 _a, uint256 _b) public view returns (uint256 target) {
+    function getIntersectionId(uint _a, uint _b) public view returns (uint target) {
         for (target; target < goban ; target++) {
             if (intersections[target].x == _a && intersections[target].y == _b) {
                 return target;
@@ -125,15 +126,53 @@ contract Go is ReentrancyGuard {
         }
     }
 
-    function getIntersection(uint256 _target) public view returns (uint256 _x, uint256 _y) {
+    function getIntersection(uint _target) public view returns (uint _x, uint _y) {
         return (intersections[_target].x, intersections[_target].y);
     }
 
-    function getNeighbors(uint256 _target) public view returns (uint256 east, uint256 west, uint256 north, uint256 south) {
+    function getNeighbors(uint _target) public view returns (uint east, uint west, uint north, uint south) {
         east = _target - 1;
         west = _target + 1;
         north = _target + width;
         south = _target - width;   
         return (east, west, north, south);
+    }
+
+    // lists all connected stones
+    function getGroup(uint _target) public view returns (uint[] memory) {
+
+        uint[] memory group = new uint[](10); // will be longer than 10
+        uint nextTarget1;
+        uint nextTarget2;
+        uint nextTarget3;
+        uint nextTarget4;
+
+        uint east; 
+        uint west;
+        uint north;
+        uint south;
+
+        group[0] = _target;
+
+        (east, west, north, south) = getNeighbors(_target);
+
+        if (intersections[_target].state == intersections[east].state) {
+            group[1] = east;
+            nextTarget1 = east;
+        }
+        if (intersections[_target].state == intersections[west].state) {
+            group[2] = west;
+            nextTarget2 = west;
+        }
+        if (intersections[_target].state == intersections[north].state) {
+            group[3] = north;
+            nextTarget3 = north;
+        }
+        if (intersections[_target].state == intersections[south].state) {
+            group[4] = south;
+            nextTarget4 = south;
+        }
+
+        return group;
     }
 }

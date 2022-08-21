@@ -21,7 +21,7 @@ describe("Go", function () {
       const { go, black, white } = await loadFixture(startNewMatch);
       await go.connect(black).play(16,17);
       await go.connect(white).play(3,3);
-      expect(await go.getIntersectionId(1,1)).to.equal(20);
+      expect(await go.getIntersectionId(16,17)).to.equal(321);
       expect(go.connect(black).play(42,42)).to.be.revertedWith("OFF_BOARD");
     });
   });
@@ -69,6 +69,26 @@ describe("Go", function () {
       await go.connect(white).pass();
       await go.connect(black).pass();
       expect(await go.blackScore()).to.equal(1);
+    });
+    it("Should return 2 connected stones", async function () {
+      const {go, white, black } = await loadFixture(startNewMatch);
+      await go.connect(black).play(16,17);
+      await go.connect(white).play(3,3);
+      await go.connect(black).play(16,16);
+      const getId = await go.getIntersectionId(16,17);
+      const getGroup = await go.getGroup(getId);
+      expect(getGroup.toString()).to.equal("321,320,0,0,0,0,0,0,0,0");
+    });
+    it("Should return 3 connected stones", async function () {
+      const {go, white, black } = await loadFixture(startNewMatch);
+      await go.connect(black).play(16,17);
+      await go.connect(white).play(3,3);
+      await go.connect(black).play(16,16);
+      await go.connect(white).play(3,16);
+      await go.connect(black).play(17,17);
+      const getId = await go.getIntersectionId(16,17);
+      const getGroup = await go.getGroup(getId);
+      expect(getGroup.toString()).to.equal("321,320,0,340,0,0,0,0,0,0");
     });
   });
 });
