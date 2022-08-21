@@ -79,16 +79,27 @@ describe("Go", function () {
       const getGroup = await go.getGroup(getId);
       expect(getGroup.toString()).to.equal("321,320,0,0,0,0,0,0,0,0");
     });
-    it("Should return 3 connected stones", async function () {
-      const {go, white, black } = await loadFixture(startNewMatch);
-      await go.connect(black).play(16,17);
-      await go.connect(white).play(3,3);
-      await go.connect(black).play(16,16);
-      await go.connect(white).play(3,16);
-      await go.connect(black).play(17,17);
-      const getId = await go.getIntersectionId(16,17);
-      const getGroup = await go.getGroup(getId);
-      expect(getGroup.toString()).to.equal("321,320,0,340,0,0,0,0,0,0");
-    });
+    // it("Should return 3 connected stones", async function () {
+    //   const {go, white, black } = await loadFixture(startNewMatch);
+    //   await go.connect(black).play(16,17);
+    //   await go.connect(white).play(3,3);
+    //   await go.connect(black).play(16,16);
+    //   await go.connect(white).play(3,16);
+    //   await go.connect(black).play(17,17);
+    //   // const getId = await go.getIntersectionId(16,17);
+    //   const getGroup = await go.getGroup(await go.getIntersectionId(16,17));
+    //   expect(getGroup.toString()).to.equal("321,320,0,340,0,0,0,0,0,0");
+    // });
+    // it("Should get the next target", async function () {
+    //   const {go, white, black } = await loadFixture(startNewMatch);
+    //   await go.connect(black).play(16,17);
+    //   await go.connect(white).play(3,3);
+    //   await go.connect(black).play(16,16);
+    //   await go.connect(white).play(3,16);
+    //   await go.connect(black).play(17,17);
+    //   const getId = await go.getIntersectionId(16,17);
+    //   const getGroup = await go.getGroup(getId);
+    //   expect(getGroup.toString()).to.equal("321,320,0,340,0,0,0,0,0,0");
+    // });
   });
 });

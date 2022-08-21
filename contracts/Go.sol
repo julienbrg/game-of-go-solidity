@@ -142,36 +142,36 @@ contract Go is ReentrancyGuard {
     function getGroup(uint _target) public view returns (uint[] memory) {
 
         uint[] memory group = new uint[](10); // will be longer than 10
-        uint nextTarget1;
-        uint nextTarget2;
-        uint nextTarget3;
-        uint nextTarget4;
+
+        uint nextTarget;
 
         uint east; 
         uint west;
         uint north;
         uint south;
 
-        group[0] = _target;
+        uint id;
+
+        group[id] = _target;
 
         (east, west, north, south) = getNeighbors(_target);
 
         if (intersections[_target].state == intersections[east].state) {
             group[1] = east;
-            nextTarget1 = east;
+            nextTarget = east;
         }
-        if (intersections[_target].state == intersections[west].state) {
-            group[2] = west;
-            nextTarget2 = west;
-        }
-        if (intersections[_target].state == intersections[north].state) {
-            group[3] = north;
-            nextTarget3 = north;
-        }
-        if (intersections[_target].state == intersections[south].state) {
-            group[4] = south;
-            nextTarget4 = south;
-        }
+        // if (intersections[_target].state == intersections[west].state) {
+        //     group[2] = west;
+        //     nextTarget = west;
+        // }
+        // if (intersections[_target].state == intersections[north].state) {
+        //     group[3] = north;
+        //     nextTarget = north;
+        // }
+        // if (intersections[_target].state == intersections[south].state) {
+        //     group[4] = south;
+        //     nextTarget = south;
+        // }
 
         return group;
     }
