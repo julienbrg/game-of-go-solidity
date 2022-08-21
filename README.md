@@ -23,7 +23,7 @@ npx hardhat test
 
 - [Applicable Traditional Japanese Rules](http://home.snafu.de/jasiek/atj.html)
 - [Tromp-Taylor Rules](https://senseis.xmp.net/?TrompTaylorRules)
-- [How to implement Go]() by Thaddée Tyl
+- [How to implement Go](https://medium.com/@espadrine/how-to-implement-go-5eef424719bd) by Thaddée Tyl
 - [Programming the game of Go](https://blog.sabati.dev/go/igo/rust/move/generation/programming/baduk/goban/2019/10/15/go-game/)
 
 ## Support
