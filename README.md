@@ -1,6 +1,6 @@
 # Game of Go
 
-A Solidity implementation of the game of go.
+A naive implementation of the game of go in Solidity.
 
 ## Install
 
@@ -17,10 +17,11 @@ npx hardhat test
 ## Rationale
 
 - One deployed contract represents one match.
-- The deployer set the addresses of White and Black at deployment.
+- The deployer set the addresses of Black and White at deployment.
 
 ## Resources
 
+- [Applicable Traditional Japanese Rules](http://home.snafu.de/jasiek/atj.html)
 - [Tromp-Taylor Rules](https://senseis.xmp.net/?TrompTaylorRules)
 - [How to implement Go]() by Thaddée Tyl
 - [Programming the game of Go](https://blog.sabati.dev/go/igo/rust/move/generation/programming/baduk/goban/2019/10/15/go-game/)
