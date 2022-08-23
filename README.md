@@ -2,6 +2,10 @@
 
 A naive implementation of the game of go in Solidity.
 
+## Motivation
+
+A personnal challenge as a go player, and a way to learn more about gas optimization.
+
 ## Install
 
 ```shell
