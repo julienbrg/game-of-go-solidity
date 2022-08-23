@@ -19,7 +19,7 @@ contract Playground {
     function fromEmptyToWhite() public {
         state = 0x00;
         console.log("      before:", uint8(state));
-        state = 0x55; // [10101010]
+        state = 0x55; // [01010101]
         console.log("      after:", uint8(state));
     }
 
