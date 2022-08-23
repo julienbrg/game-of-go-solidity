@@ -5,8 +5,6 @@ import "hardhat/console.sol";
 
 contract Playground {
 
-    constructor() {}
-
     bytes1 public state;
 
     function fromEmptyToBlack() public {
