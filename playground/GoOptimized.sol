@@ -4,7 +4,8 @@ pragma solidity ^0.8.8;
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "hardhat/console.sol";
 
-contract Go is ReentrancyGuard {
+// the enum is replaced by a bytes1
+contract GoOptimized is ReentrancyGuard {
 
     uint public goban = 19 * 19;
     uint public width = 19;
@@ -21,17 +22,12 @@ contract Go is ReentrancyGuard {
     struct Intersection {
         uint x;
         uint y;
-        State state;
+        bytes1 state;
     }
 
     Intersection[361] public intersections;
 
-    enum State {
-        Black,
-        White,
-        Empty
-    }
-    State public state;
+    bytes1 public state;
 
     event Start(string indexed statement);
     event Move(string indexed player, uint indexed x, uint indexed y);
@@ -51,10 +47,10 @@ contract Go is ReentrancyGuard {
         
         // Goban init
         uint i;
-        intersections[0] = Intersection({x: 0, y: 0, state: State.Empty});
-        for( uint k ; k < width ; k++ ) {
-            for( uint j ; j < width ; j++ ) {
-                intersections[i++] = Intersection({x: j, y: k, state: State.Empty});
+        intersections[0] = Intersection({x: 0, y: 0, state: 0x00});
+        for( uint j ; j < width ; j++ ) {
+            for( uint k ; k < width ; k++ ) {
+                intersections[i++] = Intersection({x: j, y: k, state: 0x00});
             }
         }
         require(i==goban, "ERROR_DURING_GOBAN_INIT");
@@ -65,18 +61,18 @@ contract Go is ReentrancyGuard {
         require(msg.sender == white || msg.sender == black, "CALLER_IS_NOT_ALLOWED_TO_PLAY" ); // maybe better with a onlyPlayer modifier instead
         require(isOffBoard(_x, _y) == false, "OFF_BOARD");
         uint move = getIntersectionId(_x, _y);
-        require(intersections[move].state == State.Empty, "CANNOT_PLAY_HERE");
+        require(intersections[move].state == 0x00, "CANNOT_PLAY_HERE");
 
         if (msg.sender == white) {
             require(turn == white, "NOT_YOUR_TURN");
-            intersections[move].state = State.White;
+            intersections[move].state = 0x55;
             turn = black;
             emit Move("White", _x, _y);
         }
 
         if (msg.sender == black) {
             require(turn == black, "NOT_YOUR_TURN");
-            intersections[move].state = State.Black;
+            intersections[move].state = 0xaa;
             turn = white;
             emit Move("Black", _x, _y);
         }
@@ -138,51 +134,49 @@ contract Go is ReentrancyGuard {
         return (east, west, north, south);
     }
 
-    // get a list all connected stones
+    // lists all connected stones
     function getGroup(uint _target) public view returns (uint[] memory) {
 
         uint[] memory group = new uint[](10); // will be longer than 10
-        uint id = 0 ;
-        console.log("      id center=", id);
 
-        // uint[] memory toCheck = new uint[](10); // will be longer than 10
-        // uint tc = 0;
+        uint nextTarget;
 
         uint east; 
         uint west;
         uint north;
         uint south;
 
-        group[0] = _target;        
-            
+        uint id = 0 ;
+
+        group[id] = _target;
+
         (east, west, north, south) = getNeighbors(_target);
 
         if (intersections[_target].state == intersections[east].state) {
             id = id + 1;
             console.log("      id  east =", id);
-            // for(uint i ; i< group.length ;i++) {
-            //     // if () {
-
-            //     // }
-            // }
             group[id] = east;
+            nextTarget = east;
         }
         if (intersections[_target].state == intersections[west].state) {
             id = id + 1;
             console.log("      id west =", id);
             group[id] = west;
+            nextTarget = west;
         }
         if (intersections[_target].state == intersections[north].state) {
             id = id + 1;
             console.log("      id north =", id);
             group[id] = north;
+            nextTarget = north;
         }
         if (intersections[_target].state == intersections[south].state) {
             id = id + 1;
             console.log("      id south =", id);
             group[id] = south;
+            nextTarget = south;
         }
-        
+
         return group;
     }
 }

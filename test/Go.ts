@@ -17,13 +17,6 @@ describe("Go", function () {
       expect(await go.black()).to.equal(black.address);
       expect(go.connect(attacker).play(16,17)).to.be.revertedWith('CALLER_IS_NOT_ALLOWED_TO_PLAY');
     });
-    it("Should let players play", async function () {
-      const { go, black, white } = await loadFixture(startNewMatch);
-      await go.connect(black).play(16,17);
-      await go.connect(white).play(3,3);
-      expect(await go.getIntersectionId(16,17)).to.equal(321);
-      expect(go.connect(black).play(42,42)).to.be.revertedWith('OFF_BOARD');
-    });
   });
 
   describe("Interactions", function () {
@@ -37,7 +30,7 @@ describe("Go", function () {
     it("Should return the intersection id", async function () {
       const {go, black } = await loadFixture(startNewMatch);
       await go.connect(black).play(16,17);
-      expect(await go.getIntersectionId(16,17)).to.equal(321);
+      expect(await go.getIntersectionId(16,17)).to.equal(339);
     });
     it("Should be off board", async function () {
       const {go, black, white } = await loadFixture(startNewMatch);
@@ -50,10 +43,15 @@ describe("Go", function () {
       const {go, black } = await loadFixture(startNewMatch);
       await go.connect(black).play(16,17);
       const target = await go.getIntersectionId(16,17) ;
-      expect((await go.getNeighbors(target)).east ).to.equal(320);
-      expect((await go.getNeighbors(target)).west ).to.equal(322);
-      expect((await go.getNeighbors(target)).north ).to.equal(340);
-      expect((await go.getNeighbors(target)).south ).to.equal(302);
+      // console.log("center:", await go.getIntersectionId(16,17));
+      // console.log("east:", await go.getIntersectionId(15,17));
+      // console.log("west:", await go.getIntersectionId(17,17));
+      // console.log("north:", await go.getIntersectionId(16,18));
+      // console.log("south:", await go.getIntersectionId(16,16));
+      expect((await go.getNeighbors(target)).east ).to.equal(await go.getIntersectionId(15,17));
+      expect((await go.getNeighbors(target)).west ).to.equal(await go.getIntersectionId(17,17));
+      expect((await go.getNeighbors(target)).north ).to.equal(await go.getIntersectionId(16,18));
+      expect((await go.getNeighbors(target)).south ).to.equal(await go.getIntersectionId(16,16));
     });
     it("Should pass", async function () {
       const {go, black } = await loadFixture(startNewMatch);
@@ -75,32 +73,36 @@ describe("Go", function () {
       await go.connect(black).play(16,17);
       await go.connect(white).play(3,3);
       await go.connect(black).play(16,16);
+      await go.connect(white).play(3,16);
+      await go.connect(black).play(16,15);
+      await go.connect(white).play(16,3);
+      await go.connect(black).play(17,15);
+      await go.connect(white).play(17,5);
+      await go.connect(black).play(15,15);
       const getId = await go.getIntersectionId(16,17);
       const getGroup = await go.getGroup(getId);
-      expect(getGroup.toString()).to.equal('321,320,0,0,0,0,0,0,0,0');
+      console.log(await go.getIntersectionId(16,16));
+      expect(getGroup.toString()).to.equal('339,320,0,0,0,0,0,0,0,0');
     });
-    it("Should return 3 connected stones", async function () {
+    it("Should get the next target", async function () {
       const {go, white, black } = await loadFixture(startNewMatch);
       await go.connect(black).play(16,17);
       await go.connect(white).play(3,3);
       await go.connect(black).play(16,16);
       await go.connect(white).play(3,16);
-      await go.connect(black).play(17,17);
-      const getGroup = await go.getGroup(await go.getIntersectionId(16,17));
-      expect(getGroup.toString()).to.equal('321,320,340,0,0,0,0,0,0,0');
+      await go.connect(black).play(16,15);
+      await go.connect(white).play(16,3);
+      await go.connect(black).play(17,15);
+      await go.connect(white).play(17,5);
+      await go.connect(black).play(15,15);
+      const getId = await go.getIntersectionId(16,17);
+      const getGroup = await go.getGroup(getId);
+      // console.log("", await go.getIntersectionId(16,17));
+      // console.log("", await go.getIntersectionId(16,16));
+      // console.log("", await go.getIntersectionId(16,15));
+      // console.log("", await go.getIntersectionId(17,15));
+      // console.log("", await go.getIntersectionId(15,15));
+      expect(getGroup.toString()).to.equal("339,320,301,302,300,0,0,0,0,0");
     });
-    // it("Should get the next target", async function () {
-    //   const {go, white, black } = await loadFixture(startNewMatch);
-    //   await go.connect(black).play(16,17);
-    //   await go.connect(white).play(3,3);
-    //   await go.connect(black).play(16,16);
-    //   await go.connect(white).play(3,16);
-    //   await go.connect(black).play(17,17);
-    //   await go.connect(white).play(16,3);
-    //   await go.connect(black).play(17,15);
-    //   const getId = await go.getIntersectionId(17,15);
-    //   const getGroup = await go.getGroup(getId);
-    //   expect(getGroup.toString()).to.equal("321,320,340,338,0,0,0,0,0,0");
-    // });
   });
 });
